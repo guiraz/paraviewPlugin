@@ -1,0 +1,30 @@
+<SourceProxy name="GlyphPerso" class="vtkGlyph3Dbis" label="GlyphPerso">
+    <Documentation long_help="This filter generates an arrow, cone, cube, cylinder, line, sphere, or 2D glyph at each point of the input data set.  The glyphs can be oriented and scaled by point attributes of the input dataset." short_help="Generate a glyph symbol at each point of the input data set.">
+        The Glyph filter generates a glyph (i.e., an arrow, cone, cube, cylinder, line, sphere, or 2D glyph) at each point in the input dataset. The glyphs can be oriented and scaled by the input point-centered scalars and vectors. The Glyph filter operates on any type of data set. Its output is polygonal. This filter is available on the Toolbar.
+    </Documentation>
+
+    <InputProperty
+        name="LineDataSet"
+        command="SetInputConnection">
+        <ProxyGroupDomain name="groups">
+            <Group name="sources"/>
+            <Group name="filters"/>
+        </ProxyGroupDomain>
+        <DataTypeDomain name="input_type">
+            <DataType value="vtkPolyData"/>
+        </DataTypeDomain>
+        <Documentation>
+            Set the source data set landmark points.
+        </Documentation>
+    </InputProperty>
+
+    <Hints>
+    <!-- Visibility Element can be used to suggest the GUI about
+    visibility of this filter (or its input) on creation.
+    replace_input="0" implies that the input visibility is not
+    changed on creation of this filter (defaults to "1")
+    -->
+        <Visibility replace_input="0" />
+    </Hints>
+    <!-- End Glyph -->
+</SourceProxy>
