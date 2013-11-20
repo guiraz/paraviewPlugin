@@ -4,3 +4,6 @@ pv/*
 
 ##   GEDIT_TEMP_FILE   ##
 *~
+
+##   QT_USER_FILE   ##
+*.user

@@ -1,5 +1,5 @@
-#ifndef __vtkGlyph3Dbis_h
-#define __vtkGlyph3Dbis_h
+#ifndef __newGlyph_h
+#define __newGlyph_h
 
 #include "vtkPolyDataAlgorithm.h"
 
@@ -22,23 +22,16 @@
 
 class vtkTransform;
 
-class VTK_GRAPHICS_EXPORT vtkGlyph3Dbis : public vtkPolyDataAlgorithm
+class VTK_GRAPHICS_EXPORT newGlyph : public vtkPolyDataAlgorithm
 {
 public:
-  vtkTypeMacro(vtkGlyph3Dbis,vtkPolyDataAlgorithm);
+  vtkTypeMacro(newGlyph,vtkPolyDataAlgorithm);
   void PrintSelf(ostream& os, vtkIndent indent);
-
-  // Description
-  // Construct object with scaling on, scaling mode is by scalar value,
-  // scale factor = 1.0, the range is (0,1), orient geometry is on, and
-  // orientation is by vector. Clamping and indexing are turned off. No
-  // initial sources are defined.
-  static vtkGlyph3Dbis *New();
+  static newGlyph *New();
 
 protected:
-  vtkGlyph3Dbis();
-  ~vtkGlyph3Dbis();
-
+  newGlyph();
+  ~newGlyph();
   virtual int RequestData(vtkInformation *, vtkInformationVector **, vtkInformationVector *);
 };
 
