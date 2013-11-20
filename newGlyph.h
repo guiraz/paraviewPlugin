@@ -40,7 +40,8 @@ protected:
   double CurrentIntegrationTime;
 
 private:
-    vtkIdType UnderBoundPoint(vtkIdType*, vtkDoubleArray*);
+    vtkIdType UnderBoundPoint(vtkIdType, vtkIdType*, vtkDoubleArray*);
+    void SetBounds(vtkDoubleArray*, double, double);
 };
 
 #endif

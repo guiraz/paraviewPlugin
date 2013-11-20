@@ -21,7 +21,7 @@
         </InputProperty>
 
         <DoubleVectorProperty
-        name="SetCurrentIntegrationTime"
+        name="CurrentIntegrationTime"
         command="SetCurrentIntegrationTime"
         number_of_elements="1"
         default_values="0.0">

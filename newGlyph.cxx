@@ -46,6 +46,7 @@ int newGlyph::RequestData(
   vtkInformationVector **inputVector,
   vtkInformationVector *outputVector)
 {
+    vtkDebugMacro(<<"updating");
 
     //Check CIT bounds
     if(this->CurrentIntegrationTime>1)
@@ -87,6 +88,9 @@ int newGlyph::RequestData(
 
     // Get IntegrationTime array
     vtkDoubleArray *IT = vtkDoubleArray::SafeDownCast(inputPD->GetScalars());
+    SetBounds(IT,0,1);
+
+    //vtkDebugMacro(<<"tuples : "<<IT->GetNumberOfTuples()<<" comp : "<<IT->GetNumberOfComponents());
 
     /***********************************************************************************/
 
@@ -102,7 +106,7 @@ int newGlyph::RequestData(
     while(streams->GetNextCell(nbPoints, pointsIds)!=0)
     {
         //Get the first point of the stream and insert in the returned points array
-        vtkIdType pointID = pointsIds[0];//UnderBoundPoint(pointsIds, IT);
+        vtkIdType pointID = UnderBoundPoint(nbPoints, pointsIds, IT);
         double * x = input->GetPoint(pointID);
         points->InsertNextPoint(x);
         pointsIds = NULL;
@@ -117,7 +121,51 @@ void newGlyph::PrintSelf(ostream& os, vtkIndent indent)
   this->Superclass::PrintSelf(os,indent);
 }
 
-vtkIdType newGlyph::UnderBoundPoint(vtkIdType* pointsIds, vtkDoubleArray* IT)
+vtkIdType newGlyph::UnderBoundPoint(vtkIdType nbPoints, vtkIdType* pointsIds, vtkDoubleArray* IT)
 {
-    return 0;
+    for(int i=0; i<nbPoints; i++)
+        vtkDebugMacro(<<"it "<<i<<" : "<<IT->GetTuple1(pointsIds[i]));
+    /*for(int i=0; i<nbPoints; i++)
+        vtkDebugMacro(<<"points : "<<i<<" : "<<pointsIds[i]);
+    vtkDebugMacro(<<"nbpoints : "<<nbPoints);
+    vtkDebugMacro(<<"cit : "<<this->CurrentIntegrationTime);*/
+
+
+    vtkIdType id = 0;
+    bool endArray = false, findId = false;
+    while((!endArray) && (!findId))
+    {
+        if(id == nbPoints-1)
+            endArray = true;
+        else
+        {
+            if(this->CurrentIntegrationTime <= IT->GetTuple1(pointsIds[id]))
+                findId = true;
+            else
+                id++;
+        }
+    }
+
+    return pointsIds[id];
+}
+
+void newGlyph::SetBounds(vtkDoubleArray* IT, double min, double max)
+{
+
+    vtkIdType nbIt = IT->GetNumberOfTuples();
+
+    double itMax = IT->GetTuple1(0);
+    double itMin = itMax;
+    for(int i=1; i<nbIt; i++)
+    {
+        if(IT->GetTuple1(i)>itMax)
+            itMax=IT->GetTuple1(i);
+        if(IT->GetTuple1(i)<itMin)
+            itMin=IT->GetTuple1(i);
+    }
+
+    double diff = itMax - itMin;
+
+    for(int i = 0; i<nbIt;i++)
+        IT->SetTuple1(i, (IT->GetTuple1(i) - itMin) / diff);
 }
