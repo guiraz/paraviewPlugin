@@ -20,6 +20,13 @@
             </Documentation>
         </InputProperty>
 
+        <DoubleVectorProperty
+        name="SetCurrentIntegrationTime"
+        command="SetCurrentIntegrationTime"
+        number_of_elements="1"
+        default_values="0.0">
+        </DoubleVectorProperty>
+
         <Hints>
         <!-- Visibility Element can be used to suggest the GUI about
         visibility of this filter (or its input) on creation.

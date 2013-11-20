@@ -3,4 +3,5 @@ INCLUDE(${PARAVIEW_USE_FILE})
 ADD_PARAVIEW_PLUGIN(newGlyph "1.0"
 SERVER_MANAGER_XML newGlyph.xml
 SERVER_MANAGER_SOURCES newGlyph.cxx)
-INCLUDE_DIRECTORIES(/root/src/ParaView-3.14.1-Source/VTK)
+INCLUDE_DIRECTORIES(/usr/local/src/ParaView-3.14.1-Source/VTK)
+#INCLUDE_DIRECTORIES(/root/src/ParaView-3.14.1-Source/VTK)

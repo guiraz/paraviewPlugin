@@ -1,6 +1,8 @@
 ##   PV_BUILD_REPO   ##
 pv/*
 
+##   PV_STATE_SAVE   ##
+*.pvsm
 
 ##   GEDIT_TEMP_FILE   ##
 *~

@@ -29,10 +29,18 @@ public:
   void PrintSelf(ostream& os, vtkIndent indent);
   static newGlyph *New();
 
+  vtkSetClampMacro(CurrentIntegrationTime,double,0.0,1.0);
+  vtkGetMacro(CurrentIntegrationTime,double);
+
 protected:
   newGlyph();
   ~newGlyph();
   virtual int RequestData(vtkInformation *, vtkInformationVector **, vtkInformationVector *);
+
+  double CurrentIntegrationTime;
+
+private:
+    vtkIdType UnderBoundPoint(vtkIdType*, vtkDoubleArray*);
 };
 
 #endif
