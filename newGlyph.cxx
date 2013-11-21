@@ -90,6 +90,7 @@ int newGlyph::RequestData(
     //Scanning streamlines
     vtkIdType nbPoints;
     vtkIdType * pointsIds;
+    vtkDoubleArray * scalars = vtkDoubleArray::New();
 
     int i =0;
     streams->InitTraversal();
@@ -103,10 +104,13 @@ int newGlyph::RequestData(
             double *x = new double[3];
             WeightedAverage2Points(pointID, input, x);
             points->InsertNextPoint(x);
+            scalars->InsertNextTuple1(this->CurrentIntegrationTime);
             pointsIds = NULL;
         }
         i++;
     }
+
+    output->GetPointData()->SetScalars(scalars);
 
     return 1;
 }
