@@ -91,6 +91,7 @@ int newGlyph::RequestData(
     vtkIdType nbPoints;
     vtkIdType * pointsIds;
     vtkDoubleArray * scalars = vtkDoubleArray::New();
+    scalars->SetName("IntegrationTime");
 
     int i =0;
     streams->InitTraversal();
@@ -111,7 +112,12 @@ int newGlyph::RequestData(
     }
 
     //Put scalars in the output
-    output->GetPointData()->SetScalars(scalars);
+    vtkPointData *outputPD = output->GetPointData();
+    outputPD->AddArray(scalars);
+
+    points->Delete();
+    scalars->Delete();
+    delete[] pointsIds;
 
     return 1;
 }
@@ -231,4 +237,9 @@ void newGlyph::WeightedAverage2Points(vtkIdType * AB, vtkPolyData* input, double
     C = (alpha * xb - alpha * xa + xa), (alpha * yb - alpha * ya + ya), (alpha * zb - alpha * za + za)
 
     ********************************************************/
+
+    A = NULL;
+    B = NULL;
+    delete[] A;
+    delete[] B;
 }
