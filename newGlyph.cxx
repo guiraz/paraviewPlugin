@@ -28,7 +28,7 @@ vtkStandardNewMacro(newGlyph);
 // initial sources are defined.
 newGlyph::newGlyph()
 {
-    //this->DebugOn();
+    this->DebugOn();
     this->SetNumberOfInputPorts(1);
     this->CurrentIntegrationTime=0.0;
 }
@@ -91,18 +91,21 @@ int newGlyph::RequestData(
     vtkIdType nbPoints;
     vtkIdType * pointsIds;
 
+    int i =0;
     streams->InitTraversal();
     while(streams->GetNextCell(nbPoints, pointsIds)!=0)
     {
         //Get the first point of the stream and insert in the returned points array
-        vtkIdType pointID = UnderBoundPoint(nbPoints, pointsIds, IT);
-        if(pointID!=-1)
+        vtkIdType * pointID = new vtkIdType[2];
+        BoundPoints(nbPoints, pointsIds, IT, pointID);
+        if(pointID[0]!=-1)
         {
-            vtkDebugMacro(<<"retour");
-            double * x = input->GetPoint(pointID);
+            double *x = new double[3];
+            WeightedAverage2Points(pointID, input, x);
             points->InsertNextPoint(x);
             pointsIds = NULL;
         }
+        i++;
     }
 
     return 1;
@@ -114,26 +117,35 @@ void newGlyph::PrintSelf(ostream& os, vtkIndent indent)
   this->Superclass::PrintSelf(os,indent);
 }
 
-vtkIdType newGlyph::UnderBoundPoint(vtkIdType nbPoints, vtkIdType* pointsIds, vtkDoubleArray* IT)
+void newGlyph::BoundPoints(vtkIdType nbPoints, vtkIdType* pointsIds, vtkDoubleArray* IT, vtkIdType * result)
 {
+    result[0] = -1;
+    result[1] = -1;
     double cit = this->CurrentIntegrationTime;
     vtkIdType id = 0;
     while(true)
     {
-        vtkDebugMacro(<<"id : "<<id);
         if(id >= nbPoints)
-            return -1;
+            return;
 
         //Case around 0
         if(id==0)
         {
             //Forward
             if( (cit < IT->GetTuple1(pointsIds[1])) && (cit >= IT->GetTuple1(pointsIds[0])) )
-                return pointsIds[0];
+            {
+                result[0] = pointsIds[0];
+                result[1] = pointsIds[1];
+                return;
+            }
 
             //Backward
             if( (cit >= IT->GetTuple1(pointsIds[1])) && (cit < IT->GetTuple1(pointsIds[0])) )
-                return pointsIds[1];
+            {
+                result[0] = pointsIds[1];
+                result[1] = pointsIds[0];
+                return;
+            }
         }
 
 
@@ -142,24 +154,64 @@ vtkIdType newGlyph::UnderBoundPoint(vtkIdType nbPoints, vtkIdType* pointsIds, vt
         {
             //Forward
             if( (cit < IT->GetTuple1(pointsIds[id])) && (cit >= IT->GetTuple1(pointsIds[id-1])) )
-                return pointsIds[id-1];
+            {
+                result[0] = pointsIds[id-1];
+                result[1] = pointsIds[id];
+                return;
+            }
 
 
             //Backward
             if( (cit >= IT->GetTuple1(pointsIds[id])) && (cit < IT->GetTuple1(pointsIds[id-1])) )
-                return pointsIds[id];
+            {
+                result[0] = pointsIds[id];
+                result[1] = pointsIds[id-1];
+                return;
+            }
         }
         else //Default case
         {
             //Forward
             if( (cit < IT->GetTuple1(pointsIds[id+1])) && (cit >= IT->GetTuple1(pointsIds[id])) )
-                return pointsIds[id];
+            {
+                result[0] = pointsIds[id];
+                result[1] = pointsIds[id+1];
+                return;
+            }
 
             //Backward
             if( (cit >= IT->GetTuple1(pointsIds[id+1])) && (cit < IT->GetTuple1(pointsIds[id])) )
-                return pointsIds[id+1];
+            {
+                result[0] = pointsIds[id+1];
+                result[1] = pointsIds[id];
+                return;
+            }
         }
-
         id++;
     }
+}
+
+void newGlyph::WeightedAverage2Points(vtkIdType * AB, vtkPolyData* input, double * C)
+{
+
+    double *A = new double[3];
+    input->GetPoint(AB[0], A);
+    double *B = new double[3];
+    input->GetPoint(AB[1], B);
+
+    vtkPointData *inputPD = input->GetPointData();
+
+    double tA = inputPD->GetScalars()->GetTuple1(AB[0]);
+    double tB = inputPD->GetScalars()->GetTuple1(AB[1]);
+    double tC = this->CurrentIntegrationTime;
+
+    double alpha = tC / (tB-tA);
+
+    C[0] = alpha * B[0] - alpha * A[0] + A[0];
+    C[1] = alpha * B[1] - alpha * A[1] + A[1];
+    C[2] = alpha * B[2] - alpha * A[2] + A[2];
+
+    vtkDebugMacro(<<"a : "<<A[0]<<" - "<<A[1]<<" - "<<A[2]);
+    vtkDebugMacro(<<"b : "<<B[0]<<" - "<<B[1]<<" - "<<B[2]);
+    vtkDebugMacro(<<"c : "<<C[0]<<" - "<<C[1]<<" - "<<C[2]);
 }

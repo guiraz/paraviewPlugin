@@ -40,7 +40,8 @@ protected:
   double CurrentIntegrationTime;
 
 private:
-    vtkIdType UnderBoundPoint(vtkIdType, vtkIdType*, vtkDoubleArray*);
+    void BoundPoints(vtkIdType, vtkIdType*, vtkDoubleArray*, vtkIdType *);
+    void WeightedAverage2Points(vtkIdType*, vtkPolyData*, double*);
 };
 
 #endif
