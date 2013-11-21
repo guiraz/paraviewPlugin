@@ -214,7 +214,7 @@ void newGlyph::WeightedAverage2Points(vtkIdType * AB, vtkPolyData* input, double
     double tB = inputPD->GetScalars()->GetTuple1(AB[1]); //time at B
     double tC = this->CurrentIntegrationTime;            //time at C = current time step
 
-    double alpha = tC / sqrt((tB-tA)*(tB-tA));
+    double alpha = sqrt((tC-tA)*(tC-tA)) / sqrt((tB-tA)*(tB-tA));
 
     C[0] = alpha * B[0] - alpha * A[0] + A[0];
     C[1] = alpha * B[1] - alpha * A[1] + A[1];
@@ -224,7 +224,7 @@ void newGlyph::WeightedAverage2Points(vtkIdType * AB, vtkPolyData* input, double
 
     vAB = (xb-xa), (yb-ya), (zb-za)
 
-    alpha = time_at_C / sqrt((time_at_B - time_at_A)²)     -->     distance rate between A and C
+    alpha = sqrt((time_at_C - time_at_A)²) / sqrt((time_at_B - time_at_A)²)     -->     distance rate between A and C
 
     vAC = alpha * AB = (xc-xa), (yc-ya), (zc-za)
 
