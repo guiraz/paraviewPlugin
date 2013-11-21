@@ -3,7 +3,7 @@
 
 #include "vtkPolyDataAlgorithm.h"
 
-#define VTK_SCALE_BY_SCALAR 0
+/*#define VTK_SCALE_BY_SCALAR 0
 #define VTK_SCALE_BY_VECTOR 1
 #define VTK_SCALE_BY_VECTORCOMPONENTS 2
 #define VTK_DATA_SCALING_OFF 3
@@ -18,7 +18,7 @@
 
 #define VTK_INDEXING_OFF 0
 #define VTK_INDEXING_BY_SCALAR 1
-#define VTK_INDEXING_BY_VECTOR 2
+#define VTK_INDEXING_BY_VECTOR 2*/
 
 class vtkTransform;
 
@@ -29,7 +29,7 @@ public:
   void PrintSelf(ostream& os, vtkIndent indent);
   static newGlyph *New();
 
-  vtkSetClampMacro(CurrentIntegrationTime,double,0.0,1.0);
+  vtkSetMacro(CurrentIntegrationTime,double);
   vtkGetMacro(CurrentIntegrationTime,double);
 
 protected:
@@ -41,7 +41,6 @@ protected:
 
 private:
     vtkIdType UnderBoundPoint(vtkIdType, vtkIdType*, vtkDoubleArray*);
-    void SetBounds(vtkDoubleArray*, double, double);
 };
 
 #endif
