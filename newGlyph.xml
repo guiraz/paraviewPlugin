@@ -22,9 +22,11 @@
 
         <DoubleVectorProperty
         name="CurrentIntegrationTime"
+        label="Current Step"
         command="SetCurrentIntegrationTime"
         number_of_elements="1"
         default_values="0.0">
+        <DoubleRangeDomain name="range"/>
         </DoubleVectorProperty>
 
         <Hints>
