@@ -28,7 +28,7 @@ vtkStandardNewMacro(newGlyph);
 // initial sources are defined.
 newGlyph::newGlyph()
 {
-    this->DebugOn();
+    //this->DebugOn();
     this->SetNumberOfInputPorts(1);
     this->CurrentIntegrationTime=0.0;
 }
@@ -87,7 +87,7 @@ int newGlyph::RequestData(
     vtkPoints * points = vtkPoints::New();
     output->SetPoints(points);
 
-    //Scanning streamlines
+    //Scanning streamlines and get the point at the current step time
     vtkIdType nbPoints;
     vtkIdType * pointsIds;
     vtkDoubleArray * scalars = vtkDoubleArray::New();
@@ -110,6 +110,7 @@ int newGlyph::RequestData(
         i++;
     }
 
+    //Put scalars in the output
     output->GetPointData()->SetScalars(scalars);
 
     return 1;
@@ -121,6 +122,8 @@ void newGlyph::PrintSelf(ostream& os, vtkIndent indent)
   this->Superclass::PrintSelf(os,indent);
 }
 
+
+//Get the two points around the current time step
 void newGlyph::BoundPoints(vtkIdType nbPoints, vtkIdType* pointsIds, vtkDoubleArray* IT, vtkIdType * result)
 {
     result[0] = -1;
@@ -195,6 +198,8 @@ void newGlyph::BoundPoints(vtkIdType nbPoints, vtkIdType* pointsIds, vtkDoubleAr
     }
 }
 
+
+//Get the coordonates of the point between the two points bounding the current time step
 void newGlyph::WeightedAverage2Points(vtkIdType * AB, vtkPolyData* input, double * C)
 {
 
@@ -205,17 +210,25 @@ void newGlyph::WeightedAverage2Points(vtkIdType * AB, vtkPolyData* input, double
 
     vtkPointData *inputPD = input->GetPointData();
 
-    double tA = inputPD->GetScalars()->GetTuple1(AB[0]);
-    double tB = inputPD->GetScalars()->GetTuple1(AB[1]);
-    double tC = this->CurrentIntegrationTime;
+    double tA = inputPD->GetScalars()->GetTuple1(AB[0]); //time at A
+    double tB = inputPD->GetScalars()->GetTuple1(AB[1]); //time at B
+    double tC = this->CurrentIntegrationTime;            //time at C = current time step
 
-    double alpha = tC / (tB-tA);
+    double alpha = tC / sqrt((tB-tA)*(tB-tA));
 
     C[0] = alpha * B[0] - alpha * A[0] + A[0];
     C[1] = alpha * B[1] - alpha * A[1] + A[1];
     C[2] = alpha * B[2] - alpha * A[2] + A[2];
 
-    vtkDebugMacro(<<"a : "<<A[0]<<" - "<<A[1]<<" - "<<A[2]);
-    vtkDebugMacro(<<"b : "<<B[0]<<" - "<<B[1]<<" - "<<B[2]);
-    vtkDebugMacro(<<"c : "<<C[0]<<" - "<<C[1]<<" - "<<C[2]);
+    /********************************************************
+
+    vAB = (xb-xa), (yb-ya), (zb-za)
+
+    alpha = time_at_C / sqrt((time_at_B - time_at_A)²)     -->     distance rate between A and C
+
+    vAC = alpha * AB = (xc-xa), (yc-ya), (zc-za)
+
+    C = (alpha * xb - alpha * xa + xa), (alpha * yb - alpha * ya + ya), (alpha * zb - alpha * za + za)
+
+    ********************************************************/
 }
